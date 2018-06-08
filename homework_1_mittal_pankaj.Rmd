@@ -1,0 +1,33 @@
+---
+title: "COMPSCIX 415.2 Homework 1"
+author: "Pankaj Mittal"
+date: "June 7, 2018"
+output:
+  html_document: default
+  pdf_document: default
+---
+“‘{r load_packages, warning=FALSE, message=FALSE}
+
+My Github repository for my assignments can be found at this URL: https://github.com/pankajmit/compscix-415-2-assignments.git
+
+```{r}
+library(mdsr)
+data("WorldCities")
+
+```
+
+This dataset has 23,018 observations for 10 variables.
+Some of the variable names are - code, name, latitude, langitude etc.
+
+
+```{r}
+glimpse(WorldCities)
+WorldCities <- head(WorldCities, 200)
+country_col <- WorldCities$country
+unique(country_col)
+
+region_col <- WorldCities$region
+unique(region_col)
+
+```
+
