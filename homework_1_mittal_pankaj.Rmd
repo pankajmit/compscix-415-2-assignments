@@ -31,3 +31,19 @@ unique(region_col)
 
 ```
 
+```{r}
+WorldCities %>% select(country) %>% unique
+WorldCities %>% ggplot(aes(x = population)) +
+geom_histogram() +
+  xlab('City Population')
+```
+```{r}
+WorldCities %>% ggplot(aes(x = population)) +
+geom_histogram() +
+  xlab('Population of World Cities') +
+  ylab('Count of Cities') +
+  ggtitle('Answer to Question 4') +
+  theme_bw()
+
+```
+
