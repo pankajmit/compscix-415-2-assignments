@@ -10,7 +10,7 @@ output:
 
 My Github repository for my assignments can be found at this URL: https://github.com/pankajmit/compscix-415-2-assignments.git
 
-```{r}
+```{r warning=FALSE, message=FALSE}
 library(mdsr)
 data("WorldCities")
 
