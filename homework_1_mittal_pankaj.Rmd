@@ -6,7 +6,6 @@ output:
   html_document: default
   pdf_document: default
 ---
-“‘{r load_packages, warning=FALSE, message=FALSE}
 
 My Github repository for my assignments can be found at this URL: https://github.com/pankajmit/compscix-415-2-assignments.git
 
@@ -16,9 +15,12 @@ data("WorldCities")
 
 ```
 
+## Question 1
+
 This dataset has 23,018 observations for 10 variables.
 Some of the variable names are - code, name, latitude, langitude etc.
 
+## Question 2
 
 ```{r}
 glimpse(WorldCities)
@@ -31,12 +33,20 @@ unique(region_col)
 
 ```
 
+## Question 3
 ```{r}
 WorldCities %>% select(country) %>% unique
+```
+
+
+```{r}
 WorldCities %>% ggplot(aes(x = population)) +
 geom_histogram() +
   xlab('City Population')
 ```
+
+## Question 4
+
 ```{r}
 WorldCities %>% ggplot(aes(x = population)) +
 geom_histogram() +

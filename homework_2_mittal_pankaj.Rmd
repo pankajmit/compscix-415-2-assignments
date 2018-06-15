@@ -1,0 +1,200 @@
+---
+title: "COMPSCIX 415.2 Homework 2"
+author: "Pankaj Mittal"
+date: "June 7, 2018"
+output:
+  html_document: 
+    self_contained: true
+  pdf_document: default
+---
+
+My Github repository for my assignments can be found at this URL: https://github.com/pankajmit/compscix-415-2-assignments.git
+
+```{r warning=FALSE, message=FALSE}
+library(mdsr)
+library(tidyverse)
+```
+
+## Section 3.2.4
+
+### Question 1: Running ggplot(data=mpg) shows the blank canvas
+
+```{r}
+g = ggplot(data=mpg)
+g
+```
+
+### Question 2: mpg dataset has 234 rows and 11 columns
+
+```{r}
+mpg
+```
+
+### Question 3: drv variable describes whether car is front or real or all whell drive
+
+
+### Question 4: scatterplot of hwy vs cyl
+```{r}
+g1 = g + geom_point(mapping = aes(x=hwy, y=cyl))
+g1
+```
+
+### Question 4: scatterplot of class vs drv
+This is not useful as both the vairables are categorical variables
+
+```{r}
+g2 = g + geom_point(mapping = aes(x=class, y=drv))
+g2
+```
+
+
+## Section 3.3.1
+
+### Question 1: What's wrong with this code, Why points are not blue?
+
+```{r}
+g1 = g + geom_point(mapping = aes(x = displ, y = hwy, color = "blue"))
+g1
+```
+
+Blue color needs to be a paramater to mapping functin and not aes function. This is correct code - 
+
+```{r}
+g1 = g + geom_point(mapping = aes(x = displ, y = hwy), color = "blue")
+g1
+```
+
+### Question 2: Categorical variables in mpg:
+#### Categorical: Manufacturer, model, trans, drv, class
+#### continous: displ, year, cyl, cty and hwy
+
+you can see the column header when you run mpg
+
+```{r}
+mpg
+```
+
+### Question 3: Map continous variable to color, size and shape
+#### color: Good
+#### size: Good
+#### shape: Error: continous variable can not be mapped to shape
+
+```{r}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy, color = cty))
+
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy, size = cty))
+
+```
+
+This code would throw an error. as cty is a continous variable: 
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy, shape = cty))
+
+### Question 4: Map same variable to multiple aesthetics
+#### Multiple aesthetics are implemented
+
+```{r}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy, color = cty, size = cty))
+```
+
+### Question 5: stroke aesthetics makes boundary of shape more thicker or thinner. 
+#### works with most of the shapes
+
+```{r}
+ggplot(data = mpg) +
+   geom_point(mapping = aes(x = displ, y = hwy), stroke = 1, shape = 5)
+ggplot(data = mpg) +
+   geom_point(mapping = aes(x = displ, y = hwy), stroke = 2, shape = 11)
+ggplot(data = mpg) +
+   geom_point(mapping = aes(x = displ, y = hwy), stroke = 3, shape = 24)
+```
+
+
+### Question 6: What happens if aes is other than a variable name
+
+```{r}
+ggplot(data = mpg) +
+   geom_point(mapping = aes(x = displ, y = hwy, color = displ < 5))
+```
+#### Consider this as boolean and plot the data with 2 colors
+
+## Section 3.5.1
+
+### Question 4: What are the advantage and disadvantages of facets?
+
+```{r}
+ggplot(data = mpg) +
+   geom_point(mapping = aes(x = displ, y = hwy)) +
+  facet_wrap(~ class, nrow = 2)
+```
+#### Faceting splits the data for each category making it easier to analyze subset of data. Though, difficult to analyze overall relationship. When the data set is big, color aesthetics does not work effectively.
+
+### Question 5: ?facet_wrap? What does nrow and ncol do? 
+#### facet_wrap wraps panels in 2 dimensions. nrow and ncol represents number of rows and columns respoectively
+#### Other layout option includes - scales, shrink, drop and others
+#### facet_grip doesn't have nrow or ncol argument because this is used with 
+
+## Section 3.6.1
+
+### Question 1: Geom usage
+#### line chart: geom_line
+#### boxplot: geom_boxplot
+#### histogram: geom_histogram
+#### area: geom_area
+
+```{r}
+ggplot(data = mpg) + 
+   geom_line(mapping = aes(x = displ, y = hwy))
+ggplot(data = mpg) + 
+   geom_boxplot(mapping = aes(x = displ, y = hwy))
+ggplot(data = mpg) + 
+   geom_histogram(mapping = aes(x = displ))
+ggplot(data = mpg) + 
+   geom_area(mapping = aes(x = displ, y = hwy))
+
+```
+
+### Question 2: Predict and run
+#### Prediction: draw the scatter plot and smooth line chart with no confidence interval
+```{r}
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy, color = drv)) + 
+  geom_point() + 
+  geom_smooth(se = FALSE)
+```
+
+### Question 3: show.legend = FALSE
+#### Does not show the legend on the right. By default, legends are shown whenever used.
+#### Author used it to keep it consistent with other charts
+
+```{r}
+ggplot(data = mpg) +
+  geom_smooth(mapping = aes(x = displ, y = hwy, color = drv), show.legend = FALSE)
+```
+
+### Question 4: se argument
+#### if se = FALSE, output does not show the considence interval. Buy default is is TRUE
+
+### Question 5: Will these two graphs look different?
+```{r}
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) + 
+  geom_point() + 
+  geom_smooth()
+
+ggplot() + 
+  geom_point(data = mpg, mapping = aes(x = displ, y = hwy)) + 
+  geom_smooth(data = mpg, mapping = aes(x = displ, y = hwy))
+```
+
+#### They look same because once parameters are provided to ggplot it is applicable for each layer added later
+
+
+## Section 3.7.1
+
+### Question 2: what does geom_col do? How is it diffeent than geom_bar?
+#### geom_bar makes the height of the bar proportional to the number of cases in each group
+#### geom_col is used if we want the heights of the bars to represent values in the data
+
+
