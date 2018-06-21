@@ -1,0 +1,138 @@
+---
+title: "COMPSCIX 415.2 Homework 3"
+author: "Pankaj Mittal"
+date: "June 21, 2018"
+output:
+  html_document: 
+    self_contained: true
+  pdf_document: default
+---
+
+My Github repository for my assignments can be found at this URL: https://github.com/pankajmit/compscix-415-2-assignments.git
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r warning=FALSE, message=FALSE}
+library(mdsr)
+library(tidyverse)
+library(ggplot2)
+library(nycflights13)
+```
+
+## Section 3.8.1
+
+### Q1) Problem with the plot - Some overlapping data has been hidden. 
+This can be improved by adding position = "jitter"
+
+```{r}
+ggplot(data = mpg, mapping = aes(x = cty, y = hwy)) + 
+  geom_point(position = "jitter")
+```
+
+### Q2) width and height
+
+
+### Q3) jitter adds small amount of random noise to show overlapping data. 
+Count uses the size of the bubble to show hidden data. I liked the way count is 
+showing the data and found it more useful
+
+```{r}
+ggplot(data = mpg, mapping = aes(x = cty, y = hwy)) + 
+  geom_jitter(width = 1)
+ggplot(data = mpg, mapping = aes(x = cty, y = hwy)) + 
+  geom_count()
+```
+
+### Q4) default is "dodge"
+
+```{r}
+base <- ggplot(data = mpg, mapping = aes(x=drv, y=hwy, colour=class)) 
+base + geom_boxplot()
+base + geom_boxplot(position='dodge')  #This is same as above
+base + geom_boxplot(position='identity')  #This is different and overlapping
+base + geom_boxplot(position='jitter')   #This is different and confusing
+```
+
+
+## Section 3.9.1
+
+### Q2) Labs is used to modify axis, legend and labels
+
+```{r}
+ggplot(data = mpg, mapping = aes(x = class, y = hwy)) +
+  geom_boxplot() +
+  coord_flip() +
+  labs(y = "Highway MPG", x = "", title = "Highway MPG by car class")
+```
+
+### Q4) cty and hwy are related directly propsotional.
+coord_fixed is important to ensure that x and y axix are using the same units for proper comparison
+geom_abline adds the reference line to give visual representation of trends in data
+
+```{r}
+ggplot(data = mpg, mapping = aes(x = cty, y = hwy)) +
+  geom_point() + 
+  geom_abline(intercept = 0) +
+  coord_fixed()
+```
+
+
+## Section 4.4
+### Q1) variable name (my_var1able) has been misspelled
+
+### Q2) Fixed code
+```{r}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy))
+filter(mpg, cyl == 8)
+filter(diamonds, carat > 3)
+```
+
+## Section 5.2.4
+### Q1) Run flight queries
+```{r}
+filter(flights, arr_delay > 120) # arr_delay greater than 2 hours
+filter(flights, dest %in% c("IAH", "HOU")) # Flights from Houston
+filter(flights, carrier %in% c("UA", "AA", "DL")) # United, American and Delta
+filter(flights, month %in% c(7,8,9)) # Month of July to Sep
+filter(flights, arr_delay > 120, dep_delay < 1) # Arrived late but departed on time
+filter(flights, dep_delay >= 60 , (dep_delay - arr_delay) > 30) # covered atleast 30 minutes in air
+filter(flights, between(dep_time, 0, 600)) # Early morning departure
+```
+
+### Q3) 8,255 flights
+```{r}
+filter(flights, is.na(dep_time))
+```
+Other missing variables are related to actual departure and arrival. 
+This data may be related to future travel dates
+
+### Q4) Generic rule for NA handling
+```{r}
+NA ^ 0 #Anything with zero exponent is always 1 (irrespective of base)
+NA | TRUE #Anything when OR with TRUE will always be TRUE (irrespectine of other variable)
+FALSE & NA #Anything when AND with FALSE will always be FALSE (irrespectine of other variable)
+```
+
+## Section 5.4.1
+### Q1) Selection of columns in various ways
+
+```{r}
+select(flights, dep_time, dep_delay, arr_time, arr_delay)
+select(flights, c(dep_time, dep_delay, arr_time, arr_delay))
+select(flights, 4,6,7,9)
+select(flights, starts_with("dep_"), starts_with("arr_"))
+```
+
+### Q3) one_of() is used to list all the needed variables in character vector.
+
+```{r}
+vars <- c("year", "month", "day", "dep_delay", "arr_delay")
+select(flights, vars)
+```
+
+This will be useful to select various columns from the dataset
+
