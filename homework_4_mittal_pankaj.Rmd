@@ -1,0 +1,174 @@
+
+---
+title: "COMPSCIX 415.2 Homework 3"
+author: "Pankaj Mittal"
+date: "June 21, 2018"
+output:
+  html_document: 
+    self_contained: true
+  pdf_document: default
+---
+
+My Github repository for my assignments can be found at this URL: https://github.com/pankajmit/compscix-415-2-assignments.git
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r warning=FALSE, message=FALSE}
+library(mdsr)
+library(tidyverse)
+library(ggplot2)
+library(nycflights13)
+```
+
+
+## Section 5.6.7
+
+### Q2) 
+
+```{r}
+not_cancelled <- flights %>% 
+  filter(!is.na(dep_delay), !is.na(arr_delay))
+
+not_cancelled %>% count(dest) # With count
+
+not_cancelled %>%   # Without Count
+  group_by(dest) %>% 
+  summarise(n = n())
+
+not_cancelled %>% count(tailnum, wt = distance)  # with count
+
+not_cancelled %>%     # without count
+  group_by(tailnum) %>% 
+  summarise(n = sum(distance))
+
+```
+
+### Q4) 
+
+```{r}
+cancelled_flights <- flights %>% 
+  mutate(canceled = (is.na(dep_delay) | is.na(arr_delay))) %>%
+  group_by(year, month, day) %>% 
+  summarise(prop_canceled = mean(canceled), 
+            average_dep_delay = mean(dep_delay, na.rm = TRUE))
+
+ggplot(cancelled_flights, aes(x = average_dep_delay, y = prop_canceled)) +
+  geom_point()
+
+```
+
+### Q5) Carrier F9 was worse delays
+
+```{r}
+flights %>% group_by(carrier) %>% summarise(n = n())
+
+flights %>% group_by(carrier) %>% summarise(mean_arr_delay = mean(arr_delay, na.rm = TRUE)) %>%
+  arrange(desc(mean_arr_delay))
+
+```
+
+### Q6) The sort argument sorts the results in order of count output
+
+```{r}
+flights %>% group_by(carrier) %>% count(sort = TRUE)
+```
+
+## Section 10.5
+
+### Q1) Tibble will print limited number of rows and also show class for each column
+
+### Q2) partial comuns name works with data.frame and this can create some confusion.
+```{r}
+df <- data.frame(abc = 1, xyz = "a")
+df$x
+df[, "xyz"]
+df[, c("abc", "xyz")]
+tbl <- as_tibble(df)
+tbl$x
+tbl[, "xyz"]
+tbl[, c("abc", "xyz")]
+```
+
+### Q3) Double bracket can be used. i.e. [[var]]
+
+### Q6) n_extra option controls additional columns to print
+
+
+## Section 12.3.3
+
+### Q2) 
+
+```{r}
+table4a %>%  # Correct code
+  gather('1999', '2000', key = "year", value = "cases")
+
+```
+
+### Q3) Error: Duplicate identifiers. Duplicate rows (1 and 3) with same data
+```{r}
+people <- tribble(
+  ~name,             ~key,    ~value,
+  #-----------------|--------|------
+  "Phillip Woods",   "age",       45,
+  "Phillip Woods",   "height",   186,
+  "Phillip Woods",   "age",       50,
+  "Jessica Cordero", "age",       37,
+  "Jessica Cordero", "height",   156
+)
+
+```
+
+### Q4) This need to be gathered
+```{r}
+
+preg <- tribble(
+  ~pregnant, ~male, ~female,
+  "yes",     NA,    10,
+  "no",      20,    12
+)
+
+gather(preg, pregnant, c(male, female), na.rm=TRUE)
+
+```
+
+
+## Section 12.4.3
+
+### Q1) separate function: 'extra' parameter controls what happens where there are too many values. Default is to give warning but drop extra values. 'fill' parameter controls what happens when there are no enough values. Default is to warn and fill from right 
+```{r}
+
+tibble(x = c("a,b,c", "d,e,f,g", "h,i,j")) %>% 
+  separate(x, c("one", "two", "three"), extra = "merge")
+
+tibble(x = c("a,b,c", "d,e", "f,g,i")) %>% 
+  separate(x, c("one", "two", "three"), fill = "left")
+
+```
+
+### Q2) Unite and separate function: ; 'remove' argument, if true (default), removes input column from output
+```{r}
+tibble(x = c("a,b,c", "d,e", "f,g,i")) %>% 
+  separate(x, c("one", "two", "three"), fill = "left", remove = FALSE)
+
+tibble(x = c("a,b,c", "d,e", "f,g,i")) %>% 
+  separate(x, c("one", "two", "three"), fill = "left", remove = FALSE) %>%
+  unite(remove = FALSE)
+```
+
+## Additional question on baby names
+
+```{r}
+
+file_path_read <- "C:/training/baby_names.txt"
+file_path_write <- "C:/training/baby_names.csv"
+
+x <- read_delim(file = file_path_read, delim = "|")
+glimpse(x)
+write_csv(x, path = file_path_write)
+y <- read_csv(file = file_path_write)
+glimpse(y)
+
+```
