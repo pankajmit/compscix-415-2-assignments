@@ -18,13 +18,215 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r warning=FALSE, message=FALSE}
 library(mdsr)
-library(tidyverse)
 library(ggplot2)
+library(tidyverse)
 library(nycflights13)
 ```
 
 
-## Section 5.6.7
 
-### Q2) 
+## Table of Contents
+1. RStudio and R Markdown
+2. The tidyverse packages
+3. R Basics
+4. Data Import / Export
+6. Visualization
+6. EDA
 
+## R Studio and R Markdown
+### Each midterm question is clearly separated in this document with table cof content shown above
+
+## The tidyverse packages
+
+### Question 1: Name which package is associated with each task below?
+#### Plotting - ggplot2
+#### Data munging/wrangling - dplyr
+#### Reshaping Data - tidyr
+#### Importing/Exporting data - readr
+
+### Question 2: Name two functions from each package?
+#### Plotting (ggplot2) - geom_point, geom_boxplot
+#### Data munging/wrangling (dplyr) - select, filter, summarise, mutate
+#### Reshaping Data(tidyr) - gather, spread 
+#### Importing/Exporting data (readr) - read_csv, read_delim, write_csv
+
+## R Basics
+
+### Question 1: Fix the code with fewest number of possible changes?
+#### Corrected code is below:
+```{r}
+My_data.name___is.too00ooLong <- c( 1 , 2 , 3 )
+My_data.name___is.too00ooLong
+```
+
+### Question 2: Fix the code so it works?
+#### Corrected code is below
+```{r}
+my_string <- c('has', 'an', 'error', 'in', 'it')
+my_string
+```
+
+### Question 3: Comment on what happened to the vector?
+#### Answer: All entries for the vector were forced to convert to character
+```{r}
+my_vector <- c(1, 2, '3', '4', 5)
+my_vector
+is.character(my_vector)
+is.double(my_vector)
+```
+
+## Data import/export
+
+### Question 1: Showcase import of rail_trail.txt file
+
+```{r}
+file_path_read <- "C:/training/rail_trail.txt"
+x <- read_delim(file = file_path_read, delim = "|")
+glimpse(x)
+```
+
+### Question 2: Showcase export of rail_trail.txt file
+
+```{r}
+file_path_write <- "C:/training/rail_trail.csv"
+write_csv(x, path = file_path_write)
+y <- read_csv(file = file_path_write)
+glimpse(y)
+```
+
+
+## Visualization
+
+### Question 1: Critique this graphic, giving three examples
+#### 1. This data is better represented as bar chart rather than bubble chart
+#### 2. Percentages are not adding up to 100. Those should have been explained
+#### 3. It would have been better to see the age breakup for men and women rather than completely separate visual 
+
+### Question 2: Reproduce the graphic shown using *diamonds* data set
+
+```{r}
+ggplot(data = diamonds, mapping = aes(x = cut, y = carat)) + 
+  geom_boxplot() +
+  labs(x = "CUT OF DIAMOND", y = "CARAT OF DIAMOND") +
+  coord_flip()
+```
+
+
+### Question 3: How to make above graphic more useful
+#### Answer: This graphic could be more useful if box plot is drawn separately for each color, rarther than putting together. 
+
+```{r}
+ggplot(data = diamonds, mapping = aes(x = reorder(cut, carat, FUN = median), y = carat, fill=color)) + 
+  geom_boxplot() +
+  labs(x = "CUT OF DIAMOND", y = "CARAT OF DIAMOND") +
+  coord_flip() +
+  facet_wrap(~color)
+```
+
+
+## Data Munging and Wrangling
+
+### Question 1: Is this data tidy?
+#### No, this data is not tidy. Below code will make this tidy.
+```{r}
+table2 %>%
+  spread(key = type, value = count)
+```
+
+### Question 2: Create a new column called price_per_carat? Do not print the results
+#### Here is the code
+```{r echo = TRUE, results = FALSE}
+diamonds %>%
+  mutate(price_per_carat = price / carat)
+```
+
+### Question 3: How many diamond (and what proportion) have price > 10000 and a carat < 1.5?
+#### Answer: 834 diamonds with about 1.54% proportion
+
+```{r}
+diamonds %>%
+  mutate(selected = (price > 10000 & carat < 1.5)) %>%
+  group_by(selected) %>%
+  summarise(n = n()) %>%
+  mutate(prop = n/sum(n))
+```
+
+#### These results does makes sense. Number is small because smaller diamonds (carat < 1.5) are geenrally costlier than 10000
+#### We just need to be careful of NULL values in the data
+
+## Exploratory Data Analysis (txhousing data)
+
+### Question 1: During what time period is the data from?
+#### Answer: From: Jan 2000 To: Dec 2015
+```{r}
+txhousing %>%
+  summarize(min_year = min(year), min_mo = min(month), max_year = max(year), max_mo = max(month))
+```
+
+### Question 2: How many cities are represented?
+#### Answer: 46 cities are represented
+
+```{r}
+txhousing %>%
+  count(city)
+```
+
+### Question 3: Which city, month and year had the highest number of sales?
+#### Answer: City = Houston, Month = 7 (July), Year = 2015
+```{r}
+txhousing %>%
+  filter(sales == max(sales, na.rm = TRUE))
+```
+
+### Question 4: What kind of relationship exists between the number of listings and the number of sales?
+#### Answer: In general, as number of listings increases, number of sales is also increasing
+
+```{r}
+ggplot(data = txhousing, aes(sales, listings)) +
+  geom_point()
+```
+
+
+### Question 5: What proportion of sales is missing for each city?
+#### Answer: Please see the results of query below
+
+```{r}
+txhousing %>%
+  mutate(missed_sales = is.na(sales)) %>%
+  group_by(city, missed_sales) %>%
+  summarise(count = n()) %>%
+  mutate(prop = count / sum(count))
+```
+
+
+### Question 6: Look at only the cities and months with greater than 500 sales
+```{r}
+txhousing_over500 <- txhousing %>%
+  filter(sales > 500) 
+txhousing_over500
+```
+
+#### 6)a) Are the distributions of the median sales price, when grouped by city, different?
+#### Answer: distribution of median sales price is different as per chart below
+```{r}
+ggplot(data = txhousing_over500, mapping = aes(x = city, y = median)) + 
+  geom_point() 
+```
+
+
+#### 6)b) Any cities that stand out that you’d want to investigate further?
+#### Answer: Houston has wide range of sales; Dallas has too many ouliers on the higher median price
+```{r}
+ggplot(data = txhousing_over500, mapping = aes(x = city, y = median)) + 
+  geom_boxplot() +
+  coord_flip() 
+
+ggplot(data = txhousing_over500, mapping = aes(x = city, y = sales)) + 
+  geom_point() +
+  coord_flip() 
+
+```
+
+
+#### 6)c) Why might we want to filter out all cities and months with sales less than 500?
+#### Answer: This makes the data set targeted for our analysis without the need of any filtering
