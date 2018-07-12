@@ -1,0 +1,140 @@
+---
+title: "COMPSCIX 415.2 Homework 6"
+author: "Pankaj Mittal"
+date: "July 11, 2018"
+output:
+  html_document: 
+    self_contained: true
+  pdf_document: default
+---
+
+My Github repository for my assignments can be found at this URL: https://github.com/pankajmit/compscix-415-2-assignments.git
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r warning=FALSE, message=FALSE}
+library(mdsr)
+library(tidyverse)
+library(ggplot2)
+library(nycflights13)
+library(forcats)
+library(lubridate)
+library(mosaicData)
+```
+
+## Exercise 1
+
+### 1. Variables in this data set are - outcome (alive/dead), smoker (yes/no) and age 
+### 2. There are 1,314 observation. "outcome" represents whether the person is alive or dead after 20 years;  "Smoker" represents smoking status at the baseline; "age" represents age at the time of first survey
+### 3. Data is shown below but it does not convey an meaningful information, because age is missing
+
+```{r}
+Whickham %>% count(outcome, smoker)
+ggplot(data = Whickham, mapping = aes(x = outcome, y = smoker)) + 
+  geom_point()
+```
+
+### 4. Results are not expected for the age group > 64. More people are dead who are non-smoker. This could be result of natural death of old age
+
+```{r}
+
+Whickham_age_factor <- Whickham %>%
+  mutate(age_factor = case_when(
+                        age <= 44 ~ "age <= 44", 
+                        age > 44 & age <= 64 ~ "age > 44 & age <=64", 
+                        age > 64 ~"age > 64"))
+Whickham_age_count <- Whickham_age_factor %>%
+  group_by(outcome, smoker, age_factor) %>%
+  summarize(age_count = n())
+
+ggplot(data = Whickham_age_count, mapping = aes(x = outcome, y = smoker, size = age_count)) + 
+  geom_point() + 
+  facet_wrap(~age_factor)
+```
+
+## Exercise 2
+
+### 1. Histogram and density curve of gamma distribution 
+
+```{r}
+n <- 10000
+gamma_samp <- tibble(x = rgamma(n, shape = 1, scale = 2))
+ggplot(data = gamma_samp, mapping = aes(x)) + 
+  geom_histogram()
+ggplot(data = gamma_samp, mapping = aes(x)) + 
+  geom_density()
+```
+
+### 2. mean = 1.983, standard deviation = 1.957
+
+```{r}
+mean(gamma_samp$x)
+sd(gamma_samp$x)
+```
+
+### 3. mean = 2.082, standard deviation = 2.014
+
+```{r}
+n <- 30
+gamma_samp <- tibble(x = rgamma(n, shape = 1, scale = 2))
+ggplot(data = gamma_samp, mapping = aes(x)) + 
+  geom_histogram()
+ggplot(data = gamma_samp, mapping = aes(x)) + 
+  geom_density()
+mean(gamma_samp$x)
+sd(gamma_samp$x)
+```
+
+### 4. Build the vector of mean samples with 10000 entries
+
+```{r}
+mean_samp <- rep(NA, 10000)
+for(i in 1:10000) {
+  g_samp <- rgamma(30, shape = 1, scale = 2)
+  mean_samp[i] <- mean(g_samp)
+}
+
+mean_samp <- tibble(mean_samp)
+
+```
+
+### 5. Build histogram of collection of means
+
+```{r}
+ggplot(data = mean_samp, mapping = aes(mean_samp)) + 
+  geom_histogram()
+```
+
+### 6. mean = 2.005, SD = 0.366
+
+```{r}
+mean(mean_samp$mean_samp)
+sd(mean_samp$mean_samp)
+```
+
+### 7. Any surprize - Standard deviation is very small compared to gamma distribution
+
+
+### 8. Results are very close but this could be even closer if sample size was bit bigger
+
+```{r}
+
+mean_samp <- rep(NA, 300)
+for(i in 1:300) {
+  g_samp <- rgamma(30, shape = 1, scale = 2)
+  mean_samp[i] <- mean(g_samp)
+}
+
+mean_samp <- tibble(mean_samp)
+
+ggplot(data = mean_samp, mapping = aes(mean_samp)) + 
+  geom_histogram()
+
+mean(mean_samp$mean_samp)
+sd(mean_samp$mean_samp)
+```
+
+
