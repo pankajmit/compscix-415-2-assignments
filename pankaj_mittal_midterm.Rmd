@@ -23,8 +23,6 @@ library(tidyverse)
 library(nycflights13)
 ```
 
-
-
 ## Table of Contents
 1. RStudio and R Markdown
 2. The tidyverse packages
