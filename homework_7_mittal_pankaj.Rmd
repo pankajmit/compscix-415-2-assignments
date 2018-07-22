@@ -1,0 +1,98 @@
+
+---
+title: "COMPSCIX 415.2 Homework 7"
+author: "Pankaj Mittal"
+date: "July 20, 2018"
+output:
+  html_document: 
+    self_contained: true
+  pdf_document: default
+---
+
+My Github repository for my assignments can be found at this URL: https://github.com/pankajmit/compscix-415-2-assignments.git
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r warning=FALSE, message=FALSE}
+library(mdsr)
+library(tidyverse)
+library(ggplot2)
+library(broom)
+```
+
+
+## Exercise 1
+### Number of observations:1,460 ; Number of columns: 81
+```{r}
+file_path_read <- "C:/training/train.csv"
+houses <- read_csv(file = file_path_read)
+glimpse(houses)
+```
+
+## Exercise 2 
+### Visulaize the distribution of SalePrice
+```{r}
+ggplot(data = houses) +
+  geom_histogram(mapping = aes(x = SalePrice), binwidth = 10000)
+```
+
+### Visualize the covariation between SalePrice and (Neighborhood, OverallQual)
+```{r}
+ggplot(houses) +
+  geom_point(mapping = aes(x=SalePrice, y = Neighborhood))
+
+ggplot(houses) +
+  geom_point(mapping = aes(x=SalePrice, y = OverallQual))
+
+```
+
+## Exercise 3
+### Coefficient = 180921; Coeffiecient is same as average value of SalePrice; R-Squared value is zero. This means this model is not explaning any variability.
+
+```{r}
+houses_lm <- lm(formula = SalePrice ~ 1, data = houses)
+tidy(houses_lm)
+summary(houses_lm)
+glance(houses_lm)
+```
+
+## Exercise 4
+```{r}
+houses_lm <- lm(formula = SalePrice ~ GrLivArea + OverallQual + Neighborhood, data = houses)
+summary(houses_lm)
+```
+
+### How would you interpret the coeﬃcients on GrLivArea and OverallQual?
+#### Coefficient of GrLivArea = 55.56; i.e. For every 1 unit increase in living area, Sales Price increase by about $55.
+#### Coefficient of OverallQual = 20951.42; i.e. For every 1 unit increase in overall quality, Sales Price increase by about $10,951. Please note this attribute has only 10 possible values.
+
+### How would you interpret the coeﬃcient on NeighborhoodBrkSide?
+#### coeﬃcient of NeighborhoodBrkSide is -13025.45. This means, average price difference between "Brookside"" and "Bloomington Heights" neighborhood is -($13,035)
+
+### Are the features signiﬁcant?
+#### Looking at the p-value, GrLivArea and OverallQual seems significant.
+#### Though, NeighborhoodBrkSide is not significant as p-value is about 0.21.
+
+### Are the features practically signiﬁcant?
+#### It is common knowedge that houses with greater living area and better quality would have higher price. These variables are significant bit have limited value in adding the knowledge through data science
+
+### Is the model a good ﬁt?
+#### With adjusted R square value of 0.783, model is a good fit
+
+## Exercise 6
+### Coefficient of X and the R-squared values are changing with lot of variability
+
+```{r}
+sim1a <- tibble( x = rep(1:10, each = 3), 
+                    y = x * 1.5 + 6 + rt(length(x), df = 2) )
+sim1a
+sim1a_lm <- lm(formula = y ~ x, data = sim1a)
+summary(sim1a_lm)
+```
+
+
+
